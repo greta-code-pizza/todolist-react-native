@@ -1,93 +1,37 @@
 import { StatusBar } from 'expo-status-bar';
-import React, { useState } from 'react';
-import { 
-  StyleSheet, 
-  Text, 
-  View, 
-  TextInput, 
-  FlatList, 
-  Button 
-  } from 'react-native';
+import React, { AppRegistry } from 'react';
+import { StyleSheet, View } from 'react-native';
+import { Provider } from 'react-redux';
+import { createStore, combineReducers } from 'redux';
 
-import {data} from "./data";
+import { tasksReducer } from './src/Reducers/tasksReducer';
 
-id = 4;
+import TaskFormContainer from './src/Containers/TaskFormContainer';
+import TasksContainer from './src/Containers/TasksContainer';
 
-export default function App() {
-  const [txt, setTxt] = useState("")
-  const [tasks, setTask] = useState(data.tasks)
+import { data } from "./data";
 
-  const task = ({item}) => {
-    return (
-      <View style={styles.task}>
-        <Text >Publié le {item.created_at}</Text>
-        <Text >{item.content}</Text>
-      </View>
-    )
-  }
+const store = 
+  createStore(combineReducers({
+    tasksReducer: tasksReducer
+  }));
 
-  const handleSetTask = () => {
-    setTask([...tasks, {id: id++, content: txt, created_at: "2021-10-12T19:57:30"}])
-    setTxt("")
-  }
-
-  return (
+const AppProvider = () => (
+  <Provider store={store}>
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Text 
-          style={styles.title}
-        >
-          MyTodoList
-        </Text>
-        <TextInput
-          onChangeText={setTxt}
-          value={txt}
-          style={styles.input}
-        />
-        <Button
-          onPress={() => handleSetTask()}
-          title="Ajouter une tâche"
-        />
-      </View>
-
-      <View style={styles.list}>
-        <FlatList
-          data={tasks}
-          renderItem={task}
-          keyExtractor={task => task.id}
-        />
-      </View>
-
-      <StatusBar style="auto" />
+      <TaskFormContainer />
+      <TasksContainer />
     </View>
-  );
-}
+     <StatusBar style="auto" />
+  </Provider>
+)
+
+export default AppProvider;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
     padding: 30
-  },
-  header: {
-    flex:1,
-    paddingTop: 10
-  },
-  list: {
-    flex: 3
-  },
-  task: {
-    padding: 10,
-    fontSize: 18
-  },
-  title: {
-    fontSize:20,
-    padding: 5,
-    paddingBottom: 20
-  },
-  input: {
-    borderWidth: 1,
-    backgroundColor: "#FFF",
-    marginBottom: 10
   }
 });
